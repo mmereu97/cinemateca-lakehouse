@@ -1,0 +1,16 @@
+# Private full-collection data — never committed
+data/
+out/
+*.parquet
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# IDE / OS
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

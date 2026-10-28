@@ -1,0 +1,282 @@
+{
+  "datasets": [
+    {
+      "name": "ds_overview",
+      "displayName": "Overview KPIs",
+      "queryLines": [
+        "SELECT COUNT(*) AS total_films, SUM(CASE WHEN is_elite THEN 1 ELSE 0 END) AS elite_films, ROUND(AVG(my_rating), 2) AS avg_my_rating FROM cinemateca.gold.movie_scores"
+      ]
+    },
+    {
+      "name": "ds_elite_top",
+      "displayName": "Elite Top 20",
+      "queryLines": [
+        "SELECT elite_rank, title, release_year, final_score, my_rating, votes_count FROM cinemateca.gold.movie_scores WHERE is_elite ORDER BY elite_rank LIMIT 20"
+      ]
+    },
+    {
+      "name": "ds_decade",
+      "displayName": "Films by decade",
+      "queryLines": [
+        "SELECT decade, films, elite_films FROM cinemateca.gold.movies_by_decade ORDER BY decade"
+      ]
+    },
+    {
+      "name": "ds_genre",
+      "displayName": "Top genres",
+      "queryLines": [
+        "SELECT genre, films FROM cinemateca.gold.movies_by_genre ORDER BY films DESC LIMIT 15"
+      ]
+    },
+    {
+      "name": "ds_directors",
+      "displayName": "Top directors",
+      "queryLines": [
+        "SELECT director_name, avg_my_rating, films FROM cinemateca.gold.top_directors ORDER BY avg_my_rating DESC LIMIT 15"
+      ]
+    },
+    {
+      "name": "ds_scatter",
+      "displayName": "My rating vs IMDb",
+      "queryLines": [
+        "SELECT title, imdb_rating, my_rating FROM cinemateca.gold.movie_scores"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "page_main",
+      "displayName": "Cinemateca Lakehouse",
+      "layout": [
+        {
+          "widget": {
+            "name": "w_total",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_overview",
+                  "fields": [
+                    { "name": "total_films", "expression": "`total_films`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "frame": { "showTitle": true, "title": "Total films" },
+              "encodings": {
+                "value": { "fieldName": "total_films", "displayName": "Total films" }
+              }
+            }
+          },
+          "position": { "x": 0, "y": 0, "width": 2, "height": 3 }
+        },
+        {
+          "widget": {
+            "name": "w_elite",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_overview",
+                  "fields": [
+                    { "name": "elite_films", "expression": "`elite_films`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "frame": { "showTitle": true, "title": "Elite films" },
+              "encodings": {
+                "value": { "fieldName": "elite_films", "displayName": "Elite films" }
+              }
+            }
+          },
+          "position": { "x": 2, "y": 0, "width": 2, "height": 3 }
+        },
+        {
+          "widget": {
+            "name": "w_avg",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_overview",
+                  "fields": [
+                    { "name": "avg_my_rating", "expression": "`avg_my_rating`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "frame": { "showTitle": true, "title": "Average owner rating" },
+              "encodings": {
+                "value": { "fieldName": "avg_my_rating", "displayName": "Avg rating" }
+              }
+            }
+          },
+          "position": { "x": 4, "y": 0, "width": 2, "height": 3 }
+        },
+        {
+          "widget": {
+            "name": "w_decade",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_decade",
+                  "fields": [
+                    { "name": "decade", "expression": "`decade`" },
+                    { "name": "films", "expression": "`films`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": { "showTitle": true, "title": "Films by decade" },
+              "encodings": {
+                "x": { "fieldName": "decade", "scale": { "type": "categorical" }, "displayName": "Decade" },
+                "y": { "fieldName": "films", "scale": { "type": "quantitative" }, "displayName": "Films" }
+              }
+            }
+          },
+          "position": { "x": 0, "y": 3, "width": 3, "height": 6 }
+        },
+        {
+          "widget": {
+            "name": "w_genre",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_genre",
+                  "fields": [
+                    { "name": "genre", "expression": "`genre`" },
+                    { "name": "films", "expression": "`films`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": { "showTitle": true, "title": "Top 15 genres" },
+              "encodings": {
+                "x": { "fieldName": "films", "scale": { "type": "quantitative" }, "displayName": "Films" },
+                "y": { "fieldName": "genre", "scale": { "type": "categorical" }, "displayName": "Genre" }
+              }
+            }
+          },
+          "position": { "x": 3, "y": 3, "width": 3, "height": 6 }
+        },
+        {
+          "widget": {
+            "name": "w_directors",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_directors",
+                  "fields": [
+                    { "name": "director_name", "expression": "`director_name`" },
+                    { "name": "avg_my_rating", "expression": "`avg_my_rating`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": { "showTitle": true, "title": "Top directors by average rating (min 5 films)" },
+              "encodings": {
+                "x": { "fieldName": "avg_my_rating", "scale": { "type": "quantitative" }, "displayName": "Avg owner rating" },
+                "y": { "fieldName": "director_name", "scale": { "type": "categorical" }, "displayName": "Director" }
+              }
+            }
+          },
+          "position": { "x": 0, "y": 9, "width": 3, "height": 6 }
+        },
+        {
+          "widget": {
+            "name": "w_scatter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_scatter",
+                  "fields": [
+                    { "name": "imdb_rating", "expression": "`imdb_rating`" },
+                    { "name": "my_rating", "expression": "`my_rating`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "frame": { "showTitle": true, "title": "Owner rating vs IMDb (outliers = suspicious votes)" },
+              "encodings": {
+                "x": { "fieldName": "imdb_rating", "scale": { "type": "quantitative" }, "displayName": "IMDb rating" },
+                "y": { "fieldName": "my_rating", "scale": { "type": "quantitative" }, "displayName": "Owner rating" }
+              }
+            }
+          },
+          "position": { "x": 3, "y": 9, "width": 3, "height": 6 }
+        },
+        {
+          "widget": {
+            "name": "w_elite_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_elite_top",
+                  "fields": [
+                    { "name": "elite_rank", "expression": "`elite_rank`" },
+                    { "name": "title", "expression": "`title`" },
+                    { "name": "release_year", "expression": "`release_year`" },
+                    { "name": "final_score", "expression": "`final_score`" },
+                    { "name": "my_rating", "expression": "`my_rating`" },
+                    { "name": "votes_count", "expression": "`votes_count`" }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "frame": { "showTitle": true, "title": "Elite Top 20" },
+              "encodings": {
+                "columns": [
+                  { "fieldName": "elite_rank", "displayName": "Rank" },
+                  { "fieldName": "title", "displayName": "Title" },
+                  { "fieldName": "release_year", "displayName": "Year" },
+                  { "fieldName": "final_score", "displayName": "Final score" },
+                  { "fieldName": "my_rating", "displayName": "Owner rating" },
+                  { "fieldName": "votes_count", "displayName": "Votes" }
+                ]
+              }
+            }
+          },
+          "position": { "x": 0, "y": 15, "width": 6, "height": 8 }
+        }
+      ]
+    }
+  ]
+}
